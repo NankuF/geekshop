@@ -6,13 +6,13 @@ def index(request):
     context = {
         "title": "Geekshop",
     }
-    return render(request, 'products/index.html', context)
+    return render(request, "products/index.html", context)
 
 
 def products(request):
     context = {
-        'title': 'Products',
-        'products': [
+        "title": "Products",
+        "products": [
             {"name": "Худи черного цвета с монограммами adidas Originals", "price": "6 090,00 руб.",
              "description": "Мягкая ткань для свитшотов. Стиль и комфорт – это образ жизни.",
              "image": "vendor/img/products/Adidas-hoodie.png"},
@@ -33,4 +33,4 @@ def products(request):
              "image": "vendor/img/products/Dark-blue-wide-leg-ASOs-DESIGN-trousers.png"},
         ]
     }
-    return render(request, 'products/products.html', context=context)
+    return render(request, "products/products.html", context=context)
