@@ -19,7 +19,7 @@ def login(request):
                 print(form.errors)
     else:
         form = UserLoginForm()
-    context = {'form': form}
+    context = {'title': 'Authorization', 'form': form}
     return render(request, 'users/login.html', context)
 
 
@@ -33,7 +33,7 @@ def register(request):
             print(form.errors)
     else:
         form = UserRegisterForm()
-    context = {'form': form}
+    context = {'title': 'Register', 'form': form}
     return render(request, 'users/register.html', context)
 
 
