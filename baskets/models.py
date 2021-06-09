@@ -15,3 +15,14 @@ class Basket(models.Model):
 
     def sum(self):
         return self.quantity * self.product.price
+
+    def total_quantity(self):
+        pass
+
+    def total_sum(self):
+        pass
+
+# Написать в модели корзины методы для определения общего количества и стоимости добавленных товаров.
+# Вывести эти величины в шаблоне.
+
+
