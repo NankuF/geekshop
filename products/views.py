@@ -3,7 +3,6 @@ from django.shortcuts import render
 from .models import Product, ProductCategory
 
 
-# Create your views here.
 def index(request):
     context = {
         "title": "Geekshop",
@@ -20,5 +19,3 @@ def products(request):
         'category': category,
     }
     return render(request, "products/products.html", context=context)
-
-

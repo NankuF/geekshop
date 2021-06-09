@@ -21,9 +21,9 @@
 
                 <h1 class="my-4">GeekShop</h1>
                 {% for category in category %}
-                <div class="list-group">
-                    <a href="#" class="list-group-item">{{ category.name }}</a>
-                </div>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">{{ category.name }}</a>
+                    </div>
                 {% endfor %}
             </div>
             <!-- /.col-lg-3 -->
@@ -66,7 +66,7 @@
                             <div class="card h-100">
                                 <a href="#">
                                     <img class="card-img-top"
-                                         src="{{ product.image.url}}"
+                                         src="{{ product.image.url }}"
                                          alt="">
                                 </a>
                                 <div class="card-body">
@@ -78,7 +78,9 @@
                                     <h1>{{ product.category.name }}</h1>
                                 </div>
                                 <div class="card-footer text-center">
-                                    <button type="button" class="btn btn-outline-success">Отправить в корзину</button>
+                                    <a href="{% url 'baskets:basket_add' product.id %}" class="btn btn-outline-success">
+                                        Отправить в корзину
+                                    </a>
                                 </div>
                             </div>
                         </div>
