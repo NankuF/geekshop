@@ -3,6 +3,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.utils.decorators import method_decorator
 
 from users.models import User
 from admins.forms import UserAdminRegisterForm, UserAdminProfileForm
@@ -28,6 +29,10 @@ class UserAdminListView(ListView):
         context['title'] = 'Пользователи'
         return context
 
+    @method_decorator(user_passes_test(lambda u: u.is_superuser))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserAdminListView, self).dispatch(request, *args, **kwargs)
+
 # @user_passes_test(lambda u: u.is_superuser)
 # def admin_users_create(request):
 #     if request.method == 'POST':
@@ -51,6 +56,10 @@ class UserAdminCreateView(CreateView):
         context = super(UserAdminCreateView, self).get_context_data(**kwargs)
         context['title'] = 'Cоздание пользователя'
         return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserAdminCreateView, self).dispatch(request, *args, **kwargs)
 
 # @user_passes_test(lambda u: u.is_superuser)
 # def admin_users_update(request, id):
@@ -81,6 +90,9 @@ class UserAdminUpdateView(UpdateView):
         context['title'] = 'Редактирование пользователя'
         return context
 
+    @method_decorator(user_passes_test(lambda u: u.is_superuser))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserAdminUpdateView, self).dispatch(request, *args, **kwargs)
 
 # @user_passes_test(lambda u: u.is_superuser)
 # def admin_users_delete(request, id):
@@ -100,3 +112,7 @@ class UserAdminDeleteView(DeleteView):
         self.object.is_active = False
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserAdminDeleteView, self).dispatch(request, *args, **kwargs)
