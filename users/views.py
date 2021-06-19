@@ -1,9 +1,10 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
-from django.contrib.auth import views, login as auth_login
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.views import LoginView, LogoutView
 
 from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm
 from baskets.models import Basket
@@ -26,10 +27,11 @@ from users.models import User
 #     return render(request, 'users/login.html', context)
 
 
-class UserAuthorizationLoginView(views.LoginView):
-    model = User
+class UserAuthorizationLoginView(LoginView):
+    """
+    setting.py -> LOGIN_REDIRECT_URL = '/products/'
+    """
     template_name = 'users/login.html'
-    success_url = reverse_lazy('index')
     form_class = UserLoginForm
 
     def form_valid(self, form):
@@ -98,6 +100,14 @@ def profile(request):
     return render(request, 'users/profile.html', context)
 
 
-def logout(request):
-    auth.logout(request)
-    return HttpResponseRedirect(reverse('index'))
+# def logout(request):
+#     auth.logout(request)
+#     return HttpResponseRedirect(reverse('index'))
+
+
+class UserLogoutLogoutView(LogoutView):
+    """ 2 варианта:
+    1) next_page = '/'
+    2) в settings.py написать LOGOUT_REDIRECT_URL = '/' , а в классе - pass
+    """
+    pass
