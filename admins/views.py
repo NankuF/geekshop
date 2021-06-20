@@ -33,6 +33,7 @@ class UserAdminListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         return super(UserAdminListView, self).dispatch(request, *args, **kwargs)
 
+
 # @user_passes_test(lambda u: u.is_superuser)
 # def admin_users_create(request):
 #     if request.method == 'POST':
@@ -60,6 +61,7 @@ class UserAdminCreateView(CreateView):
     @method_decorator(user_passes_test(lambda u: u.is_superuser))
     def dispatch(self, request, *args, **kwargs):
         return super(UserAdminCreateView, self).dispatch(request, *args, **kwargs)
+
 
 # @user_passes_test(lambda u: u.is_superuser)
 # def admin_users_update(request, id):
@@ -93,6 +95,7 @@ class UserAdminUpdateView(UpdateView):
     @method_decorator(user_passes_test(lambda u: u.is_superuser))
     def dispatch(self, request, *args, **kwargs):
         return super(UserAdminUpdateView, self).dispatch(request, *args, **kwargs)
+
 
 # @user_passes_test(lambda u: u.is_superuser)
 # def admin_users_delete(request, id):
