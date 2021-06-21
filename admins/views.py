@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -14,12 +14,6 @@ def index(request):
     return render(request, 'admins/admin.html')
 
 
-# @user_passes_test(lambda u: u.is_superuser)
-# def admin_users(request):
-#     context = {'title': ' Админ | Пользователи', 'users': User.objects.all()}
-#     return render(request, 'admins/admin-users-read.html', context)
-
-
 class UserAdminListView(ListView):
     model = User
     template_name = 'admins/admin-users-read.html'
@@ -32,19 +26,6 @@ class UserAdminListView(ListView):
     @method_decorator(user_passes_test(lambda u: u.is_superuser))
     def dispatch(self, request, *args, **kwargs):
         return super(UserAdminListView, self).dispatch(request, *args, **kwargs)
-
-
-# @user_passes_test(lambda u: u.is_superuser)
-# def admin_users_create(request):
-#     if request.method == 'POST':
-#         form = UserAdminRegisterForm(data=request.POST, files=request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('admins:admin_users'))
-#     else:
-#         form = UserAdminRegisterForm()
-#     context = {'title': 'Админ | Регистрация', 'form': form}
-#     return render(request, 'admins/admin-users-create.html', context)
 
 
 class UserAdminCreateView(CreateView):
@@ -63,24 +44,6 @@ class UserAdminCreateView(CreateView):
         return super(UserAdminCreateView, self).dispatch(request, *args, **kwargs)
 
 
-# @user_passes_test(lambda u: u.is_superuser)
-# def admin_users_update(request, id):
-#     selected_user = User.objects.get(id=id)
-#     if request.method == 'POST':
-#         form = UserAdminProfileForm(data=request.POST, files=request.FILES, instance=selected_user)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('admins:admin_users'))
-#     else:
-#         form = UserAdminProfileForm(instance=selected_user)
-#         context = {
-#             'title': 'Админ | Обновление пользователя',
-#             'form': form,
-#             'selected_user': selected_user,
-#         }
-#         return render(request, 'admins/admin-users-update-delete.html', context)
-
-
 class UserAdminUpdateView(UpdateView):
     model = User
     template_name = 'admins/admin-users-update-delete.html'
@@ -95,14 +58,6 @@ class UserAdminUpdateView(UpdateView):
     @method_decorator(user_passes_test(lambda u: u.is_superuser))
     def dispatch(self, request, *args, **kwargs):
         return super(UserAdminUpdateView, self).dispatch(request, *args, **kwargs)
-
-
-# @user_passes_test(lambda u: u.is_superuser)
-# def admin_users_delete(request, id):
-#     user = User.objects.get(id=id)
-#     user.is_active = False
-#     user.save()
-#     return HttpResponseRedirect(reverse('admins:admin_users'))
 
 
 class UserAdminDeleteView(DeleteView):

@@ -20,6 +20,13 @@ class UserAuthorizationLoginView(LoginView):
     template_name = 'users/login.html'
     form_class = UserLoginForm
 
+    def get_context_data(self, **kwargs):
+        context = super(UserAuthorizationLoginView, self).get_context_data(**kwargs)
+        context.update({
+            'title': 'Авторизация',
+        })
+        return context
+
     def form_valid(self, form):
         auth_login(self.request, form.get_user())
         messages.success(self.request, "Авторизация прошла успешно")
@@ -32,6 +39,13 @@ class UserRegistrationCreateView(CreateView):
     template_name = 'users/register.html'
     success_url = reverse_lazy('users:login')
     form_class = UserRegisterForm
+
+    def get_context_data(self, **kwargs):
+        context = super(UserRegistrationCreateView, self).get_context_data(**kwargs)
+        context.update({
+            'title': 'Регистрация',
+        })
+        return context
 
     def form_valid(self, form):
         super().form_valid(form)
