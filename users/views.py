@@ -1,76 +1,91 @@
-from django.shortcuts import render, HttpResponseRedirect
-from django.contrib import auth, messages
-from django.urls import reverse
+from django.shortcuts import HttpResponseRedirect
+from django.contrib import messages
+from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.views import LoginView, LogoutView
 
 from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm
 from baskets.models import Basket
+from users.models import User
 
 
-def login(request):
-    if request.method == 'POST':
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            user = auth.authenticate(username=username, password=password)
-            if user and user.is_active:
-                auth.login(request, user)
-                return HttpResponseRedirect(reverse('index'))
-    else:
-        form = UserLoginForm()
-    context = {'title': 'Authorization', 'form': form}
-    return render(request, 'users/login.html', context)
+class UserAuthorizationLoginView(LoginView):
+    """
+    Страница авторизации
+    setting.py -> LOGIN_REDIRECT_URL = '/products/'
+    """
+    template_name = 'users/login.html'
+    form_class = UserLoginForm
+
+    def get_context_data(self, **kwargs):
+        context = super(UserAuthorizationLoginView, self).get_context_data(**kwargs)
+        context.update({
+            'title': 'Авторизация',
+        })
+        return context
+
+    def form_valid(self, form):
+        auth_login(self.request, form.get_user())
+        messages.success(self.request, "Авторизация прошла успешно")
+        return HttpResponseRedirect(self.get_success_url())
 
 
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Вы успешно зарегистрировались!')
-            return HttpResponseRedirect(reverse('users:login'))
-    else:
-        form = UserRegisterForm()
-    context = {'title': 'Register', 'form': form}
-    return render(request, 'users/register.html', context)
+class UserRegistrationCreateView(CreateView):
+    """Страница регистрации нового пользователя"""
+    model = User
+    template_name = 'users/register.html'
+    success_url = reverse_lazy('users:login')
+    form_class = UserRegisterForm
+
+    def get_context_data(self, **kwargs):
+        context = super(UserRegistrationCreateView, self).get_context_data(**kwargs)
+        context.update({
+            'title': 'Регистрация',
+        })
+        return context
+
+    def form_valid(self, form):
+        super().form_valid(form)
+        messages.success(self.request, "Пользователь успешно создан. Авторизуйтесь")
+        return HttpResponseRedirect(self.get_success_url())
 
 
-@login_required
-def profile(request):
-    user = request.user
-    if request.method == 'POST':
-        form = UserProfileForm(data=request.POST, files=request.FILES, instance=user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Изменения выполнены успешно')
-            return HttpResponseRedirect(reverse('users:profile'))
-    else:
-        form = UserProfileForm(instance=user)
+class UserProfileUpdateView(UpdateView):
+    """Страница профиля"""
+    model = User
+    form_class = UserProfileForm
+    template_name = 'users/profile.html'
 
-    # Вариант расчета total_quantity и total_sum
-    # baskets = Basket.objects.filter(user=user)
-    # total_quantity = 0
-    # total_sum = 0
-    # for basket in baskets:
-    #     total_quantity += basket.quantity
-    #     total_sum += basket.sum()
-    #
-    # Рефакторинг
-    # total_quantity = sum(basket.quantity for basket in baskets)
-    # total_sum = sum((basket.product.price * basket.quantity) for basket in baskets)
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileUpdateView, self).get_context_data(**kwargs)
+        context.update({
+            'title': 'Редактирование профиля',
+            'baskets': Basket.objects.filter(user=self.request.user),
+        })
+        return context
 
-    context = {
-        'title': 'GeekShop - Личный кабинет',
-        'form': form,
-        'baskets': Basket.objects.filter(user=user),
-        # 'baskets': baskets,
-        # 'total_quantity': total_quantity,
-        # 'total_sum': total_sum,
-    }
-    return render(request, 'users/profile.html', context)
+    def form_valid(self, form):
+        # Работает криво (позволяет писать всякую чушь и сохранять)
+        super().form_valid(form)
+        messages.success(self.request, "Изменения сохранены")
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        # self.success_url или success_url ?????????
+        success_url = reverse_lazy('users:profile', kwargs={'pk': self.object.pk})
+        return success_url
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserProfileUpdateView, self).dispatch(request, **kwargs)
 
 
-def logout(request):
-    auth.logout(request)
-    return HttpResponseRedirect(reverse('index'))
+class UserLogoutLogoutView(LogoutView):
+    """ 2 варианта:
+    1) next_page = '/'
+    2) в settings.py написать LOGOUT_REDIRECT_URL = '/' , а в классе - pass
+    """
+    pass
