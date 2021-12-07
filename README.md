@@ -1,2 +1,1 @@
-1 Django course on Geekbrains.
-Project: internet shop.
+Учебный проект интернет-магазина на Django.
